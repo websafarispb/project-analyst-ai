@@ -24,29 +24,9 @@ class AnalysisService:
                 sources=[]
             )
 
-        key_findings: list[str] = []
-        risks: list[str] = []
-        open_questions: list[str] = []
-
-        for file_name, content in matched_documents.items():
-            lines = content.splitlines()
-
-            for line in lines:
-                cleaned_line = line.strip()
-
-                if not cleaned_line:
-                    continue
-
-                lowered_line = cleaned_line.lower()
-
-                if "risk" in lowered_line:
-                    risks.append(f"{file_name}: {cleaned_line}")
-
-                if "question" in lowered_line:
-                    open_questions.append(f"{file_name}: {cleaned_line}")
-
-                if "should" in lowered_line or "must" in lowered_line:
-                    key_findings.append(f"{file_name}: {cleaned_line}")
+        key_findings = self._extract_key_findings(matched_documents)
+        risks = self._extract_risks(matched_documents)
+        open_questions = self._extract_open_questions(matched_documents)
 
         if not key_findings:
             key_findings.append("No key findings were extracted yet")
@@ -64,3 +44,54 @@ class AnalysisService:
             open_questions=open_questions,
             sources=source_names
         )
+
+    def _extract_key_findings(self, documents: dict[str, str]) -> list[str]:
+        findings: list[str] = []
+
+        for file_name, content in documents.items():
+            for line in content.splitlines():
+                cleaned_line = line.strip()
+
+                if not cleaned_line:
+                    continue
+
+                lowered_line = cleaned_line.lower()
+
+                if "should" in lowered_line or "must" in lowered_line:
+                    findings.append(f"{file_name}: {cleaned_line}")
+
+        return findings
+
+    def _extract_risks(self, documents: dict[str, str]) -> list[str]:
+        risks: list[str] = []
+
+        for file_name, content in documents.items():
+            for line in content.splitlines():
+                cleaned_line = line.strip()
+
+                if not cleaned_line:
+                    continue
+
+                lowered_line = cleaned_line.lower()
+
+                if "risk" in lowered_line:
+                    risks.append(f"{file_name}: {cleaned_line}")
+
+        return risks
+
+    def _extract_open_questions(self, documents: dict[str, str]) -> list[str]:
+        questions: list[str] = []
+
+        for file_name, content in documents.items():
+            for line in content.splitlines():
+                cleaned_line = line.strip()
+
+                if not cleaned_line:
+                    continue
+
+                lowered_line = cleaned_line.lower()
+
+                if "question" in lowered_line:
+                    questions.append(f"{file_name}: {cleaned_line}")
+
+        return questions
