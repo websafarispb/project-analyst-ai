@@ -32,3 +32,24 @@ class DocumentService:
             documents[file_name] = self.read_document(file_name)
 
         return documents
+
+    def search_documents(self, query: str, limit: int = 3) -> dict[str, str]:
+        documents = self.read_all_documents()
+        query_words = [word.lower() for word in query.split() if word.strip()]
+
+        scored_documents: list[tuple[str, str, int]] = []
+
+        for file_name, content in documents.items():
+            content_lower = content.lower()
+            score = sum(1 for word in query_words if word in content_lower)
+
+            if score > 0:
+                scored_documents.append((file_name, content, score))
+
+        scored_documents.sort(key=lambda item: item[2], reverse=True)
+
+        result: dict[str, str] = {}
+        for file_name, content, _score in scored_documents[:limit]:
+            result[file_name] = content
+
+        return result

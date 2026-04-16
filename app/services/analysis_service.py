@@ -8,20 +8,33 @@ class AnalysisService:
         self.document_service = DocumentService()
 
     def analyze(self, request: AnalyzeRequest) -> AnalyzeResponse:
-        documents = self.document_service.read_all_documents()
-        source_names = list(documents.keys())
+        matched_documents = self.document_service.search_documents(request.query)
+        source_names = list(matched_documents.keys())
+
+        if not matched_documents:
+            return AnalyzeResponse(
+                summary=f"No relevant documents found for query: {request.query}",
+                key_findings=[
+                    "The search did not find matching documents"
+                ],
+                risks=[],
+                open_questions=[
+                    "Should we fall back to analyzing all documents when no matches are found?"
+                ],
+                sources=[]
+            )
 
         return AnalyzeResponse(
             summary=f"Analysis for query: {request.query}",
             key_findings=[
-                f"Loaded {len(documents)} documents for analysis",
-                "Real document reading is now implemented"
+                f"Found {len(matched_documents)} relevant documents",
+                "Simple keyword-based retrieval is now implemented"
             ],
             risks=[
-                "LLM integration is not implemented yet"
+                "Search is still very basic and may miss semantically relevant documents"
             ],
             open_questions=[
-                "How should relevant documents be selected for each query?"
+                "Should search use better ranking in the next version?"
             ],
             sources=source_names
         )
