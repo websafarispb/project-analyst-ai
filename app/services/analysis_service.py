@@ -1,20 +1,27 @@
 from app.models.request_models import AnalyzeRequest
 from app.models.response_models import AnalyzeResponse
+from app.services.document_service import DocumentService
 
 
 class AnalysisService:
+    def __init__(self):
+        self.document_service = DocumentService()
+
     def analyze(self, request: AnalyzeRequest) -> AnalyzeResponse:
+        documents = self.document_service.read_all_documents()
+        source_names = list(documents.keys())
+
         return AnalyzeResponse(
             summary=f"Analysis for query: {request.query}",
             key_findings=[
-                "No real analysis yet",
-                "This is the first placeholder response"
+                f"Loaded {len(documents)} documents for analysis",
+                "Real document reading is now implemented"
             ],
             risks=[
                 "LLM integration is not implemented yet"
             ],
             open_questions=[
-                "Which documents should be analyzed first?"
+                "How should relevant documents be selected for each query?"
             ],
-            sources=[]
+            sources=source_names
         )
