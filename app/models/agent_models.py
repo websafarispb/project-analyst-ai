@@ -9,3 +9,8 @@ class AgentResponse(BaseModel):
     selected_tool: str | None
     reason: str
     result: str
+
+
+class ToolInfo(BaseModel):
+    name: str
+    description: str

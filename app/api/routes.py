@@ -5,11 +5,14 @@ from app.models.agent_models import AgentRequest, AgentResponse
 from app.models.request_models import AnalyzeRequest
 from app.models.response_models import AnalyzeResponse
 from app.services.analysis_service import AnalysisService
+from app.tools.tool_registry import ToolRegistry
+from app.models.agent_models import ToolInfo
 
 router = APIRouter()
 
 analysis_service = AnalysisService()
 simple_agent = SimpleAgent()
+tool_registry = ToolRegistry()
 
 
 @router.get("/")
@@ -36,3 +39,15 @@ def agent(request: AgentRequest):
         reason=response["reason"],
         result=response["result"],
     )
+
+@router.get("/tools", response_model=list[ToolInfo])
+def get_tools():
+    tools = tool_registry.list_tools()
+
+    return [
+        ToolInfo(
+            name=tool["name"],
+            description=tool["description"]
+        )
+        for tool in tools
+    ]
