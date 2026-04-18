@@ -1,21 +1,27 @@
 from app.core.config import settings
 from app.models.request_models import AnalyzeRequest
 from app.models.response_models import AnalyzeResponse
+from app.tools.list_documents_tool import ListDocumentsTool
+from app.tools.search_documents_tool import SearchDocumentsTool
 from app.services.document_service import DocumentService
-from app.services.llm_service import LlmService
 
 
 class AnalysisService:
     def __init__(self):
+        self.list_documents_tool = ListDocumentsTool()
+        self.search_documents_tool = SearchDocumentsTool()
         self.document_service = DocumentService()
-        self.llm_service = LlmService()
 
     def analyze(self, request: AnalyzeRequest) -> AnalyzeResponse:
-        matched_documents = self.document_service.search_documents(request.query)
+        matched_documents = self.search_documents_tool.run(request.query)
         used_fallback = False
 
         if not matched_documents and settings.FALLBACK_TO_ALL_DOCUMENTS:
-            matched_documents = self.document_service.read_all_documents()
+            available_documents = self.list_documents_tool.run()
+            matched_documents = {
+                file_name: self.document_service.read_document(file_name)
+                for file_name in available_documents
+            }
             used_fallback = True
 
         source_names = list(matched_documents.keys())
@@ -37,13 +43,11 @@ class AnalysisService:
         if used_fallback:
             summary += " (fallback to all documents was used)"
 
-        llm_result = self.llm_service.analyze(request.query, matched_documents)
-
         return AnalyzeResponse(
-            summary=llm_result["summary"],
-            key_findings=llm_result["key_findings"],
-            risks=llm_result["risks"],
-            open_questions=llm_result["open_questions"],
+            summary=summary,
+            key_findings=key_findings,
+            risks=risks,
+            open_questions=open_questions,
             sources=source_names
         )
 
