@@ -10,6 +10,7 @@ class SimpleAgent:
     def handle(self, user_query: str) -> dict:
         routing_result = self.router.route(user_query)
         tool_name = routing_result["tool_name"]
+        tool_input = routing_result["tool_input"]
         reason = routing_result["reason"]
 
         if not tool_name:
@@ -21,19 +22,14 @@ class SimpleAgent:
 
         tool = self.registry.get_tool(tool_name)
 
-        if tool_name == "list_documents":
-            result = tool.run()
-        elif tool_name == "search_documents":
-            result = tool.run(user_query)
-        elif tool_name == "read_document":
-            file_name = user_query.split()[-1]
-            result = tool.run(file_name)
-        else:
+        if not tool:
             return {
                 "selected_tool": None,
-                "reason": f"Tool '{tool_name}' is not supported yet.",
-                "result": "Unsupported tool",
+                "reason": f"Tool '{tool_name}' was not found in registry.",
+                "result": "Tool not found",
             }
+
+        result = tool.run(**tool_input)
 
         return {
             "selected_tool": tool.name,
