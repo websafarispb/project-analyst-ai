@@ -1,8 +1,10 @@
 from pathlib import Path
 
+from app.core.config import settings
+
 
 class DocumentService:
-    def __init__(self, documents_dir: str = "documents"):
+    def __init__(self, documents_dir: str = settings.DOCUMENTS_DIR):
         self.documents_path = Path(documents_dir)
 
     def list_documents(self) -> list[str]:
@@ -33,7 +35,7 @@ class DocumentService:
 
         return documents
 
-    def search_documents(self, query: str, limit: int = 3) -> dict[str, str]:
+    def search_documents(self, query: str, limit: int = settings.SEARCH_LIMIT) -> dict[str, str]:
         documents = self.read_all_documents()
         query_words = [self._normalize_word(word) for word in query.split() if word.strip()]
 
