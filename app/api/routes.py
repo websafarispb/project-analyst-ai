@@ -39,6 +39,8 @@ def agent(request: AgentRequest):
         reason=response["reason"],
         result=response["result"],
         score=response["score"],
+        tool_input=response["tool_input"],
+        available_tools=response["available_tools"],
         scoring_details=response["scoring_details"],
     )
 

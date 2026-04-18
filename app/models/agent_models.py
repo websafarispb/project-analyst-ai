@@ -21,4 +21,6 @@ class AgentResponse(BaseModel):
     reason: str
     result: str
     score: int
+    tool_input: dict
+    available_tools: list[ToolInfo]
     scoring_details: list[ToolScoreInfo]

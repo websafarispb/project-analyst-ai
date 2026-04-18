@@ -14,6 +14,7 @@ class SimpleAgent:
         reason = routing_result["reason"]
         score = routing_result["score"]
         scoring_details = routing_result["scoring_details"]
+        available_tools = self.registry.list_tools()
 
         if not tool_name:
             return {
@@ -21,7 +22,9 @@ class SimpleAgent:
                 "reason": reason,
                 "result": "I don't know which tool to use",
                 "score": score,
-                "scoring_details": scoring_details
+                "tool_input": tool_input,
+                "available_tools": available_tools,
+                "scoring_details": scoring_details,
             }
 
         tool = self.registry.get_tool(tool_name)
@@ -32,7 +35,9 @@ class SimpleAgent:
                 "reason": f"Tool '{tool_name}' was not found in registry.",
                 "result": "Tool not found",
                 "score": score,
-                "scoring_details": scoring_details
+                "tool_input": tool_input,
+                "available_tools": available_tools,
+                "scoring_details": scoring_details,
             }
 
         result = tool.run(**tool_input)
@@ -42,5 +47,7 @@ class SimpleAgent:
             "reason": reason,
             "result": str(result),
             "score": score,
-            "scoring_details": scoring_details
+            "tool_input": tool_input,
+            "available_tools": available_tools,
+            "scoring_details": scoring_details,
         }
