@@ -4,6 +4,7 @@ from app.models.response_models import AnalyzeResponse
 from app.tools.list_documents_tool import ListDocumentsTool
 from app.tools.search_documents_tool import SearchDocumentsTool
 from app.services.document_service import DocumentService
+from app.tools.read_document_tool import ReadDocumentTool
 
 
 class AnalysisService:
@@ -11,6 +12,7 @@ class AnalysisService:
         self.list_documents_tool = ListDocumentsTool()
         self.search_documents_tool = SearchDocumentsTool()
         self.document_service = DocumentService()
+        self.read_document_tool = ReadDocumentTool()
 
     def analyze(self, request: AnalyzeRequest) -> AnalyzeResponse:
         matched_documents = self.search_documents_tool.run(request.query)
@@ -19,7 +21,7 @@ class AnalysisService:
         if not matched_documents and settings.FALLBACK_TO_ALL_DOCUMENTS:
             available_documents = self.list_documents_tool.run()
             matched_documents = {
-                file_name: self.document_service.read_document(file_name)
+                file_name: self.read_document_tool.run(file_name)
                 for file_name in available_documents
             }
             used_fallback = True
