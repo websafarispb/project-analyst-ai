@@ -11,6 +11,7 @@ class AgentRouter:
 
         best_tool = None
         best_score = 0
+        scoring_details = []
 
         for tool in tools:
             searchable_text = self._normalize_text(
@@ -18,6 +19,12 @@ class AgentRouter:
             )
 
             score = sum(1 for word in query_words if word in searchable_text)
+
+            scoring_details.append({
+                "tool_name": tool["name"],
+                "score": score,
+                "searchable_text": searchable_text
+            })
 
             if score > best_score:
                 best_score = score
@@ -27,13 +34,17 @@ class AgentRouter:
             return {
                 "tool_name": None,
                 "tool_input": {},
-                "reason": "No matching tool was found for the query."
+                "reason": "No matching tool was found for the query.",
+                "score": 0,
+                "scoring_details": scoring_details
             }
 
         return {
             "tool_name": best_tool["name"],
             "tool_input": self._build_tool_input(best_tool["name"], user_query),
-            "reason": f"Selected tool '{best_tool['name']}' based on query-to-tool description matching."
+            "reason": f"Selected tool '{best_tool['name']}' based on query-to-tool description matching.",
+            "score": best_score,
+            "scoring_details": scoring_details
         }
 
     def _build_tool_input(self, tool_name: str, user_query: str) -> dict:

@@ -38,6 +38,8 @@ def agent(request: AgentRequest):
         selected_tool=response["selected_tool"],
         reason=response["reason"],
         result=response["result"],
+        score=response["score"],
+        scoring_details=response["scoring_details"],
     )
 
 @router.get("/tools", response_model=list[ToolInfo])
