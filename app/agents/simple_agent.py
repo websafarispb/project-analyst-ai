@@ -40,12 +40,17 @@ class SimpleAgent:
                 "scoring_details": scoring_details,
             }
 
-        result = tool.run(**tool_input)
+        raw_result = tool.run(**tool_input)
+
+        if hasattr(raw_result, "model_dump"):
+            result = str(raw_result.model_dump())
+        else:
+            result = str(raw_result)
 
         return {
             "selected_tool": tool.name,
             "reason": reason,
-            "result": str(result),
+            "result": result,
             "score": score,
             "tool_input": tool_input,
             "available_tools": available_tools,

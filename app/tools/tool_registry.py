@@ -1,3 +1,4 @@
+from app.tools.analyze_documents_tool import AnalyzeDocumentsTool
 from app.tools.list_documents_tool import ListDocumentsTool
 from app.tools.read_document_tool import ReadDocumentTool
 from app.tools.search_documents_tool import SearchDocumentsTool
@@ -9,6 +10,7 @@ class ToolRegistry:
             ListDocumentsTool.name: ListDocumentsTool(),
             SearchDocumentsTool.name: SearchDocumentsTool(),
             ReadDocumentTool.name: ReadDocumentTool(),
+            AnalyzeDocumentsTool.name: AnalyzeDocumentsTool(),
         }
 
     def get_tool(self, tool_name: str):

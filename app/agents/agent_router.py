@@ -58,6 +58,9 @@ class AgentRouter:
             file_name = user_query.split()[-1]
             return {"file_name": file_name}
 
+        if tool_name == "analyze_documents":
+            return {"query": user_query}
+
         return {}
 
     def _normalize_text(self, text: str) -> str:
