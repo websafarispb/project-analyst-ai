@@ -13,7 +13,7 @@ class SimpleAgent:
             return {
                 "selected_tool": tool.name,
                 "reason": "The query asks to list available documents.",
-                "result": tool.run(),
+                "result": str(tool.run()),
             }
 
         if "search" in lowered_query or "find" in lowered_query:
@@ -21,7 +21,7 @@ class SimpleAgent:
             return {
                 "selected_tool": tool.name,
                 "reason": "The query asks to search or find relevant documents.",
-                "result": tool.run(user_query),
+                "result": str(tool.run(user_query)),
             }
 
         if "read" in lowered_query:
@@ -30,7 +30,7 @@ class SimpleAgent:
             return {
                 "selected_tool": tool.name,
                 "reason": "The query asks to read a specific document.",
-                "result": tool.run(file_name),
+                "result": str(tool.run(file_name)),
             }
 
         return {
