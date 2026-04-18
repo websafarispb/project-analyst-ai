@@ -35,13 +35,13 @@ class DocumentService:
 
     def search_documents(self, query: str, limit: int = 3) -> dict[str, str]:
         documents = self.read_all_documents()
-        query_words = [word.lower() for word in query.split() if word.strip()]
+        query_words = [self._normalize_word(word) for word in query.split() if word.strip()]
 
         scored_documents: list[tuple[str, str, int]] = []
 
         for file_name, content in documents.items():
-            content_lower = content.lower()
-            score = sum(1 for word in query_words if word in content_lower)
+            content_words = [self._normalize_word(word) for word in content.lower().split()]
+            score = sum(1 for word in query_words if word in content_words)
 
             if score > 0:
                 scored_documents.append((file_name, content, score))
@@ -53,3 +53,11 @@ class DocumentService:
             result[file_name] = content
 
         return result
+
+    def _normalize_word(self, word: str) -> str:
+        normalized = word.lower().strip(".,!?():;\"'")
+
+        if normalized.endswith("s") and len(normalized) > 3:
+            normalized = normalized[:-1]
+
+        return normalized

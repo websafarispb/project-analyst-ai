@@ -9,20 +9,13 @@ class AnalysisService:
 
     def analyze(self, request: AnalyzeRequest) -> AnalyzeResponse:
         matched_documents = self.document_service.search_documents(request.query)
-        source_names = list(matched_documents.keys())
+        used_fallback = False
 
         if not matched_documents:
-            return AnalyzeResponse(
-                summary=f"No relevant documents found for query: {request.query}",
-                key_findings=[
-                    "The search did not find matching documents"
-                ],
-                risks=[],
-                open_questions=[
-                    "Should we fall back to analyzing all documents when no matches are found?"
-                ],
-                sources=[]
-            )
+            matched_documents = self.document_service.read_all_documents()
+            used_fallback = True
+
+        source_names = list(matched_documents.keys())
 
         key_findings = self._extract_key_findings(matched_documents)
         risks = self._extract_risks(matched_documents)
@@ -37,8 +30,12 @@ class AnalysisService:
         if not open_questions:
             open_questions.append("No open questions were found in the matched documents")
 
+        summary = f"Analysis for query: {request.query}"
+        if used_fallback:
+            summary += " (fallback to all documents was used)"
+
         return AnalyzeResponse(
-            summary=f"Analysis for query: {request.query}",
+            summary=summary,
             key_findings=key_findings,
             risks=risks,
             open_questions=open_questions,
