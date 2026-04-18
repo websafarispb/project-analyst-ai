@@ -41,3 +41,9 @@ project-analyst-ai/
 ├── tests/
 ├── README.md
 └── requirements.txt
+ ```
+
+### Run local
+```commandline
+uvicorn app.main:app --reload
+```
