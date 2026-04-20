@@ -43,9 +43,9 @@ class SimpleAgent:
         raw_result = tool.run(**tool_input)
 
         if hasattr(raw_result, "model_dump"):
-            result = str(raw_result.model_dump())
+            result = raw_result.model_dump()
         else:
-            result = str(raw_result)
+            result = raw_result
 
         return {
             "selected_tool": tool.name,

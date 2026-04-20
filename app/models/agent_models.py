@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Any
 
 
 class AgentRequest(BaseModel):
@@ -19,7 +20,7 @@ class ToolScoreInfo(BaseModel):
 class AgentResponse(BaseModel):
     selected_tool: str | None
     reason: str
-    result: str
+    result: Any
     score: int
     tool_input: dict
     available_tools: list[ToolInfo]

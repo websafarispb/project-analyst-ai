@@ -32,14 +32,14 @@ class AnalysisService:
 
         llm_result = self.llm_service.analyze(request.query, matched_documents)
 
-        summary = llm_result["summary"]
+        summary = llm_result.summary
         if used_fallback:
             summary += " (fallback to all documents was used)"
 
         return AnalyzeResponse(
             summary=summary,
-            key_findings=llm_result["key_findings"],
-            risks=llm_result["risks"],
-            open_questions=llm_result["open_questions"],
+            key_findings=llm_result.key_findings,
+            risks=llm_result.risks,
+            open_questions=llm_result.open_questions,
             sources=source_names
         )
